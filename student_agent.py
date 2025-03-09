@@ -14,8 +14,9 @@ def get_action(obs):
     
     with open("q_table.pkl", "rb") as f:
         Q = pickle.load(f)
-    if obs not in Q:
+    state = (obs[10], obs[11], obs[12], obs[13], obs[14], obs[15])
+    if state not in Q:
         return random.randint(0, 5)
-    return int(np.argmax(Q[obs]))
+    return int(np.argmax(Q[state]))
     # You can submit this random agent to evaluate the performance of a purely random strategy.
 

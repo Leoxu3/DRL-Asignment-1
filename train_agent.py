@@ -1,4 +1,4 @@
-# student_agent.py
+# train_agent.py
 
 import numpy as np
 import pickle
@@ -20,23 +20,25 @@ def tabular_q_learning(episodes=10000, alpha=0.1, gamma=0.99, epsilon_start=1.0,
         done = False
         truncated = False
         total_reward = 0
+        state = (obs[10], obs[11], obs[12], obs[13], obs[14], obs[15])
 
         while not done and not truncated:
-            if obs not in q_table:
-                q_table[obs] = np.zeros(6)
+            if state not in q_table:
+                q_table[state] = np.zeros(6)
 
             if random.random() < epsilon:
                 action = random.randint(0, 5)
             else:
-                action = np.argmax(q_table[obs])
+                action = np.argmax(q_table[state])
 
             next_obs, reward, done, truncated, info = env.step(action)
-            if next_obs not in q_table:
-                q_table[next_obs] = np.zeros(6)
+            next_state = (next_obs[10], next_obs[11], next_obs[12], next_obs[13], next_obs[14], next_obs[15])
+            if next_state not in q_table:
+                q_table[next_state] = np.zeros(6)
 
-            q_table[obs][action] += alpha * (reward + gamma * np.max(q_table[next_obs]) - q_table[obs][action])
+            q_table[state][action] += alpha * (reward + gamma * np.max(q_table[next_state]) - q_table[state][action])
 
-            obs = next_obs
+            state = next_state
             total_reward += reward
 
         rewards_per_episode.append(total_reward)
