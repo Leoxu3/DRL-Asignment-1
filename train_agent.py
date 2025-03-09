@@ -20,12 +20,7 @@ def tabular_q_learning(episodes=30000, alpha=0.1, gamma=0.99, epsilon_start=1.0,
         done = False
         truncated = False
         total_reward = 0
-        taxi_loc = (obs[0], obs[1])
-        stations = [(obs[2], obs[3]), (obs[4], obs[5]), (obs[6], obs[7]), (obs[8], obs[9])] 
-        if taxi_loc in stations:
-            state = (True, obs[10], obs[11], obs[12], obs[13], obs[14], obs[15])
-        else:
-            state = (False, obs[10], obs[11], obs[12], obs[13], obs[14], obs[15])
+        state = (obs[10], obs[11], obs[12], obs[13], obs[14], obs[15])
 
         while not done and not truncated:
             if state not in q_table:
@@ -37,12 +32,7 @@ def tabular_q_learning(episodes=30000, alpha=0.1, gamma=0.99, epsilon_start=1.0,
                 action = np.argmax(q_table[state])
 
             next_obs, reward, done, truncated, info = env.step(action)
-            next_taxi_loc = (next_obs[0], next_obs[1])
-            next_stations = [(next_obs[2], next_obs[3]), (next_obs[4], next_obs[5]), (next_obs[6], next_obs[7]), (next_obs[8], next_obs[9])]
-            if next_taxi_loc in next_stations:
-                next_state = (True, next_obs[10], next_obs[11], next_obs[12], next_obs[13], next_obs[14], next_obs[15])
-            else:
-                next_state = (False, next_obs[10], next_obs[11], next_obs[12], next_obs[13], next_obs[14], next_obs[15])
+            next_state = (next_obs[10], next_obs[11], next_obs[12], next_obs[13], next_obs[14], next_obs[15])
             if next_state not in q_table:
                 q_table[next_state] = np.zeros(6)
 
