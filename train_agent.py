@@ -1,0 +1,53 @@
+# student_agent.py
+
+import numpy as np
+import pickle
+import random
+import gym
+import os
+from simple_custom_taxi_env import SimpleTaxiEnv
+
+q_table = {}
+
+def tabular_q_learning(episodes=10000, alpha=0.1, gamma=0.99, epsilon_start=1.0, epsilon_end=0.1, decay_rate=0.999):
+    env = SimpleTaxiEnv(fuel_limit=5000)
+    rewards_per_episode = []
+    epsilon = epsilon_start
+
+    for episode in range(episodes):
+        obs, _ = env.reset()
+        done = False
+        truncated = False
+        total_reward = 0
+
+        while not done and not truncated:
+            if obs not in q_table:
+                q_table[obs] = np.zeros(6)
+
+            if random.random() < epsilon:
+                action = random.randint(0, 5)
+            else:
+                action = np.argmax(q_table[obs])
+
+            next_obs, reward, done, truncated, info = env.step(action)
+            if next_obs not in q_table:
+                q_table[next_obs] = np.zeros(6)
+
+            q_table[obs][action] += alpha * (reward + gamma * np.max(q_table[next_obs]) - q_table[obs][action])
+
+            obs = next_obs
+            total_reward += reward
+
+        rewards_per_episode.append(total_reward)
+        epsilon = max(epsilon * decay_rate, epsilon_end)
+
+        if (episode + 1) % 100 == 0:
+            avg_reward = np.mean(rewards_per_episode[-100:])
+            print(f"Episode {episode + 1}/{episodes}, Avg Reward: {avg_reward:.4f}, Epsilon: {epsilon:.3f}")
+
+print("Training agent...")
+tabular_q_learning()
+print("Training completed.")
+with open("q_table.pkl", "wb") as f:
+    pickle.dump(q_table, f)
+print("Training completed and Q-table saved.")

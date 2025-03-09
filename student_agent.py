@@ -11,8 +11,11 @@ def get_action(obs):
     # NOTE: Keep in mind that your Q-table may not cover all possible states in the testing environment.
     #       To prevent crashes, implement a fallback strategy for missing keys. 
     #       Otherwise, even if your agent performs well in training, it may fail during testing.
-
-
-    return random.choice([0, 1, 2, 3, 4, 5]) # Choose a random action
+    
+    with open("q_table.pkl", "rb") as f:
+        Q = pickle.load(f)
+    if obs not in Q:
+        return random.randint(0, 5)
+    return int(np.argmax(Q[obs]))
     # You can submit this random agent to evaluate the performance of a purely random strategy.
 
