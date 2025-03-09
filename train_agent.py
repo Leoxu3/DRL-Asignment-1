@@ -10,7 +10,7 @@ from real_custom_taxi_env import RealTaxiEnv
 
 q_table = {}
 
-def tabular_q_learning(episodes=20000, alpha=0.1, gamma=0.99, epsilon_start=1.0, epsilon_end=0.1, decay_rate=0.99995):
+def tabular_q_learning(episodes=30000, alpha=0.1, gamma=0.99, epsilon_start=1.0, epsilon_end=0.1, decay_rate=0.99995):
     env = RealTaxiEnv(fuel_limit=5000)
     rewards_per_episode = []
     epsilon = epsilon_start
