@@ -12,7 +12,7 @@ def get_action(obs):
     #       To prevent crashes, implement a fallback strategy for missing keys. 
     #       Otherwise, even if your agent performs well in training, it may fail during testing.
     
-    with open("q_table.pkl", "rb") as f:
+    with open("q_refined.pkl", "rb") as f:
         Q = pickle.load(f)
     stations = [(obs[2], obs[3]), (obs[4], obs[5]), (obs[6], obs[7]), (obs[8], obs[9])]
     state = ((obs[0], obs[1]) in stations, obs[10], obs[11], obs[12], obs[13], obs[14], obs[15])
