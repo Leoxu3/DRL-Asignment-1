@@ -15,7 +15,7 @@ class RealTaxiEnv():
         self.grid_size = random.randint(5, 10)
         self.current_fuel = self.fuel_limit
         all_locations = set((i, j) for i in range(self.grid_size) for j in range(self.grid_size))
-        self.obstacles = set(random.sample(list(all_locations), random.randint(0, self.grid_size)))
+        self.obstacles = set(random.sample(list(all_locations), random.randint(0, (self.grid_size // 2) * (self.grid_size // 2))))
         all_locations -= self.obstacles
         self.taxi_loc = random.choice(list(all_locations))
         self.stations = random.sample(list(all_locations), 4)
@@ -48,6 +48,7 @@ class RealTaxiEnv():
         self.current_fuel -= 1
         reward = 0
         done = False
+        truncated = False
 
         if action in [0, 1, 2, 3]:  
             reward -= 0.1
@@ -68,7 +69,6 @@ class RealTaxiEnv():
                 self.taxi_loc = (next_row, next_col)
         elif action == 4:  
             if (self.taxi_loc == self.passenger_loc) and (not self.passenger_picked_up):
-                reward += 10
                 self.passenger_picked_up = True
             else:
                 reward -= 10
@@ -81,7 +81,7 @@ class RealTaxiEnv():
                 self.passenger_picked_up = False
         
         if self.current_fuel <= 0:
-            done = True
+            truncated = True
             reward -= 10
 
-        return self.get_state(), reward, done, False, {}
+        return self.get_state(), reward, done, truncated, {}
