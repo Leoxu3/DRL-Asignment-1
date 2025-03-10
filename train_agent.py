@@ -10,7 +10,7 @@ from real_custom_taxi_env import RealTaxiEnv
 
 q_table = {}
 
-def tabular_q_learning(episodes=15000, alpha=0.1, gamma=0.99, epsilon_start=1.0, epsilon_end=0.1, decay_rate=0.9999):
+def tabular_q_learning(episodes=30000, alpha=0.05, gamma=0.99, epsilon_start=1.0, epsilon_end=0.1, decay_rate=0.99995):
     env = RealTaxiEnv(fuel_limit=5000)
     rewards_per_episode = []
     epsilon = epsilon_start
@@ -20,7 +20,9 @@ def tabular_q_learning(episodes=15000, alpha=0.1, gamma=0.99, epsilon_start=1.0,
         done = False
         truncated = False
         total_reward = 0
-        state = (obs[10], obs[11], obs[12], obs[13], obs[14], obs[15])
+        stations = [(obs[2], obs[3]), (obs[4], obs[5]), (obs[6], obs[7]), (obs[8], obs[9])]
+        taxi_loc = (obs[0], obs[1])
+        state = ((taxi_loc in stations), obs[10], obs[11], obs[12], obs[13], obs[14], obs[15])
 
         while not done and not truncated:
             if state not in q_table:
@@ -32,7 +34,12 @@ def tabular_q_learning(episodes=15000, alpha=0.1, gamma=0.99, epsilon_start=1.0,
                 action = np.argmax(q_table[state])
 
             next_obs, reward, done, truncated, info = env.step(action)
-            next_state = (next_obs[10], next_obs[11], next_obs[12], next_obs[13], next_obs[14], next_obs[15])
+            next_taxi_loc = (next_obs[0], next_obs[1])
+            next_state = ((next_taxi_loc in stations), next_obs[10], next_obs[11], next_obs[12], next_obs[13], next_obs[14], next_obs[15])
+            if next_taxi_loc in stations:
+                print("Taxi reached station")
+            else:
+                print("Taxi did not reach station")
             if next_state not in q_table:
                 q_table[next_state] = np.zeros(6)
 
