@@ -36,10 +36,6 @@ def tabular_q_learning(episodes=30000, alpha=0.05, gamma=0.99, epsilon_start=1.0
             next_obs, reward, done, truncated, info = env.step(action)
             next_taxi_loc = (next_obs[0], next_obs[1])
             next_state = ((next_taxi_loc in stations), next_obs[10], next_obs[11], next_obs[12], next_obs[13], next_obs[14], next_obs[15])
-            if next_taxi_loc in stations:
-                print("Taxi reached station")
-            else:
-                print("Taxi did not reach station")
             if next_state not in q_table:
                 q_table[next_state] = np.zeros(6)
 
