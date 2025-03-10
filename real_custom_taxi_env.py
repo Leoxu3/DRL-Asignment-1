@@ -53,7 +53,7 @@ class RealTaxiEnv():
         truncated = False
 
         if action in [0, 1, 2, 3]:  
-            reward -= 0.1
+            reward -= 1
 
             next_row, next_col = self.taxi_loc
             if action == 0 :  # Move South
@@ -104,6 +104,8 @@ def run_agent(agent_file, env_config, render=False):
         action = student_agent.get_action(obs)
         obs, reward, done, truncated, _ = env.step(action)
         total_reward += reward
+        taxi_loc = (obs[0], obs[1])
+        print(f"Step {step_count}: Action: {action}, Reward: {reward}, Taxi Loc: {taxi_loc}")
         step_count += 1
 
     print(f"Agent Finished in {step_count} steps, Score: {total_reward}")
