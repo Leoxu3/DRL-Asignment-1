@@ -8,9 +8,7 @@ import os
 from simple_custom_taxi_env import SimpleTaxiEnv
 from real_custom_taxi_env import RealTaxiEnv
 
-q_table = {}
-
-def tabular_q_learning(episodes=50000, alpha=0.1, gamma=0.99, epsilon_start=1.0, epsilon_end=0.1, decay_rate=0.99995):
+def tabular_q_learning(episodes=50000, alpha=0.05, gamma=0.99, epsilon_start=0.5, epsilon_end=0.05, decay_rate=0.99995):
     env = RealTaxiEnv(fuel_limit=5000)
     rewards_per_episode = []
     epsilon = epsilon_start
@@ -51,9 +49,11 @@ def tabular_q_learning(episodes=50000, alpha=0.1, gamma=0.99, epsilon_start=1.0,
             avg_reward = np.mean(rewards_per_episode[-100:])
             print(f"Episode {episode + 1}/{episodes}, Avg Reward: {avg_reward:.4f}, Epsilon: {epsilon:.3f}")
 
-print("Training agent...")
+with open("q_table.pkl", "rb") as f:
+    q_table = pickle.load(f)
+print("Refining agent...")
 tabular_q_learning()
-print("Training completed.")
-with open("q_table.pkl", "wb") as f:
+print("Refining completed.")
+with open("q_refined.pkl", "wb") as f:
     pickle.dump(q_table, f)
 print("Training completed and Q-table saved.")
