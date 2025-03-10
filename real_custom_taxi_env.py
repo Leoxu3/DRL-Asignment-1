@@ -1,4 +1,6 @@
 import random
+import importlib.util
+import time
 
 class RealTaxiEnv():
     def __init__(self, fuel_limit=5000):
@@ -85,3 +87,32 @@ class RealTaxiEnv():
             reward -= 10
 
         return self.get_state(), reward, done, truncated, {}
+
+def run_agent(agent_file, env_config, render=False):
+    spec = importlib.util.spec_from_file_location("student_agent", agent_file)
+    student_agent = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(student_agent)
+
+    env = RealTaxiEnv(**env_config)
+    obs, _ = env.reset()
+    total_reward = 0
+    done = False
+    truncated = False
+    step_count = 0
+
+    while not done and not truncated:
+        action = student_agent.get_action(obs)
+        obs, reward, done, truncated, _ = env.step(action)
+        total_reward += reward
+        step_count += 1
+
+    print(f"Agent Finished in {step_count} steps, Score: {total_reward}")
+    return total_reward
+
+if __name__ == "__main__":
+    env_config = {
+        "fuel_limit": 5000
+    }
+    
+    agent_score = run_agent("student_agent.py", env_config, render=True)
+    print(f"Final Score: {agent_score}")
