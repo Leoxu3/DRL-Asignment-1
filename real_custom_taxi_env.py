@@ -18,7 +18,7 @@ class RealTaxiEnv():
         self.grid_size = random.randint(5, 10)
         self.current_fuel = self.fuel_limit
         all_locations = set((i, j) for i in range(self.grid_size) for j in range(self.grid_size))
-        self.obstacles = set(random.sample(list(all_locations), random.randint(0, self.grid_size)))
+        self.obstacles = set(random.sample(list(all_locations), random.randint(0, (self.grid_size // 2)**2)))
         all_locations -= self.obstacles
         self.taxi_loc = random.choice(list(all_locations))
         self.stations = random.sample(list(all_locations), 4)
