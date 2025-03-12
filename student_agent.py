@@ -22,30 +22,36 @@ def get_action(obs):
         passenger_look = obs[14]
         destination_look = obs[15]
 
-        station_north = False
+        station_north =False
         station_south = False
         station_east = False
         station_west = False
+        station_middle = False
         for station in stations:
-            if taxi_loc[0] < station[0] and taxi_loc[1] == station[1]:
+            if (taxi_loc[0] - 1, taxi_loc[1]) == station:
                 station_north = True
-            if taxi_loc[0] > station[0] and taxi_loc[1] == station[1]:
+            if (taxi_loc[0] + 1, taxi_loc[1]) == station:
                 station_south = True
-            if taxi_loc[1] > station[1] and taxi_loc[0] == station[0]:
+            if (taxi_loc[0], taxi_loc[1] + 1) == station:
                 station_east = True
-            if taxi_loc[1] < station[1] and taxi_loc[0] == station[0]:
+            if (taxi_loc[0], taxi_loc[1] - 1) == station:
                 station_west = True
+            if taxi_loc == station:
+                station_middle = True
 
-        return (obstacle_north, obstacle_south, obstacle_east, obstacle_west, passenger_look, destination_look, passenger_picked_up, pre_action, taxi_loc in stations, station_north, station_south, station_east, station_west)
+        return (obstacle_north, obstacle_south, obstacle_east, obstacle_west, passenger_look, destination_look, passenger_picked_up, station_north, station_south, station_east, station_west, station_middle, pre_action)
 
+    def softmax(x):
+        exp_x = np.exp(x - np.max(x))
+        return exp_x / exp_x.sum()
+    
     state = get_state(obs, passenger_picked_up, pre_action)
     if state not in q_table:
         action = random.randint(0, 5)
     else:
-        if np.random.rand() < 0.3:
-            action = np.random.randint(6)
-        else:
-            action = np.argmax(q_table[state])
+        probs = softmax(q_table[state])
+        print(probs)
+        action = np.random.choice(range(6), p=probs)
 
     if action == 4 and state[4] == 1 and state[5]:
         passenger_picked_up = True

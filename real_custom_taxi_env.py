@@ -76,12 +76,12 @@ class RealTaxiEnv():
         elif action == 4:  
             if (self.taxi_loc == self.passenger_loc) and (not self.passenger_picked_up):
                 self.passenger_picked_up = True
-                reward += 50
+                reward += 100
             else:
                 reward -= 10
         elif action == 5:
             if (self.taxi_loc == self.destination) and self.passenger_picked_up:
-                reward += 100
+                reward += 500
                 done = True
             else:
                 reward -= 10
