@@ -21,7 +21,7 @@ class RealTaxiEnv():
         self.obstacles = set(random.sample(list(all_locations), random.randint(0, 0)))
         all_locations -= self.obstacles
         self.taxi_loc = random.choice(list(all_locations))
-        self.stations = [(0, 0), (0, self.grid_size - 1), (self.grid_size - 1, 0), (self.grid_size - 1, self.grid_size - 1)]
+        self.stations = random.sample(list(all_locations), 4)
         self.stations = list(self.stations)
         self.passenger_loc, self.destination = random.sample(self.stations, 2)
         self.passenger_picked_up = False  
@@ -75,7 +75,7 @@ class RealTaxiEnv():
         elif action == 4:  
             if (self.taxi_loc == self.passenger_loc) and (not self.passenger_picked_up):
                 self.passenger_picked_up = True
-                reward += 20
+                reward += 5
             else:
                 reward -= 10
         elif action == 5:

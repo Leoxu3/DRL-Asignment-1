@@ -22,13 +22,23 @@ def get_action(obs):
         passenger_look = obs[14]
         destination_look = obs[15]
 
-        return (obstacle_north, obstacle_south, obstacle_east, obstacle_west, passenger_look, (taxi_loc in stations), destination_look, passenger_picked_up, pre_action)
+        stations_north = [(station[0] < taxi_loc[0]) for station in stations]
+        stations_south = [(station[0] > taxi_loc[0]) for station in stations]
+        stations_east = [(station[1] > taxi_loc[1]) for station in stations]
+        stations_west = [(station[1] < taxi_loc[1]) for station in stations]
+        stations_distance = [abs(station[0] - taxi_loc[0]) + abs(station[1] - taxi_loc[1]) for station in stations]
+
+        return (obstacle_north, obstacle_south, obstacle_east, obstacle_west, passenger_look, destination_look, passenger_picked_up, pre_action
+                , stations_north[0], stations_south[0], stations_east[0], stations_west[0]
+                , stations_north[1], stations_south[1], stations_east[1], stations_west[1]
+                , stations_north[2], stations_south[2], stations_east[2], stations_west[2]
+                , stations_north[3], stations_south[3], stations_east[3], stations_west[3])
     
     state = get_state(obs, passenger_picked_up, pre_action)
     if state not in q_table:
         action = random.randint(0, 5)
     else:
-        if np.random.rand() < 0.1:
+        if np.random.rand() < 0.15:
             action = np.random.randint(6)
         else:
             action = np.argmax(q_table[state])
