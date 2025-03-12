@@ -55,7 +55,7 @@ class RealTaxiEnv():
         truncated = False
 
         if action in [0, 1, 2, 3]:  
-            reward -= 0.1
+            reward -= 0.5
 
             next_row, next_col = self.taxi_loc
             if action == 0 :  # Move South
