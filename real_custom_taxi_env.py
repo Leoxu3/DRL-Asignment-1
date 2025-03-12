@@ -14,7 +14,6 @@ class RealTaxiEnv():
         self.passenger_loc = None
         self.destination = None
         self.passenger_picked_up = False
-        self.pre_action = None  
     def reset(self):
         self.grid_size = random.randint(5, 10)
         self.current_fuel = self.fuel_limit
@@ -56,20 +55,6 @@ class RealTaxiEnv():
         done = False
         truncated = False
 
-        if action != 4 and self.taxi_loc == self.passenger_loc and not self.passenger_picked_up:
-            reward -= 10
-
-        if action == 0 and self.pre_action == 1:
-            reward -= 5
-        if action == 1 and self.pre_action == 0:
-            reward -= 5
-        if action == 2 and self.pre_action == 3:
-            reward -= 5
-        if action == 3 and self.pre_action == 2:
-            reward -= 5
-
-        self.pre_action = action
-
         if action in [0, 1, 2, 3]:  
             reward -= 0.5
 
@@ -92,12 +77,12 @@ class RealTaxiEnv():
         elif action == 4:  
             if (self.taxi_loc == self.passenger_loc) and (not self.passenger_picked_up):
                 self.passenger_picked_up = True
-                reward += 200
+                reward += 0
             else:
                 reward -= 10
         elif action == 5:
             if (self.taxi_loc == self.destination) and self.passenger_picked_up:
-                reward += 500
+                reward += 50
                 done = True
             else:
                 reward -= 10
