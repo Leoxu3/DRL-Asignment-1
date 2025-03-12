@@ -78,13 +78,13 @@ class RealTaxiEnv():
                 self.passenger_picked_up = True
                 reward += 100
             else:
-                reward -= 10
+                reward -= 60
         elif action == 5:
             if (self.taxi_loc == self.destination) and self.passenger_picked_up:
                 reward += 500
                 done = True
             else:
-                reward -= 10
+                reward -= 60
         
         if self.current_fuel <= 0:
             truncated = True
