@@ -49,9 +49,9 @@ def get_action(obs):
     if state not in q_table:
         action = random.randint(0, 5)
     else:
-        
         probs = softmax(q_table[state])
         print(probs)
+        print(state)
         action = np.random.choice(range(6), p=probs)
 
     if action == 4 and state[4] == 1 and state[5]:

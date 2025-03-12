@@ -15,7 +15,7 @@ class RealTaxiEnv():
         self.destination = None
         self.passenger_picked_up = False
     def reset(self):
-        self.grid_size = random.randint(5, 7)
+        self.grid_size = random.randint(5, 10)
         self.current_fuel = self.fuel_limit
         all_locations = set((i, j) for i in range(self.grid_size) for j in range(self.grid_size))
         self.obstacles = set(random.sample(list(all_locations), random.randint(0, 0)))
@@ -55,6 +55,9 @@ class RealTaxiEnv():
         done = False
         truncated = False
 
+        if action != 4 and (not self.passenger_picked_up) and self.taxi_loc == self.passenger_loc:
+            reward -= 10
+
         if action in [0, 1, 2, 3]:  
             reward -= 0.5
 
@@ -77,7 +80,7 @@ class RealTaxiEnv():
         elif action == 4:  
             if (self.taxi_loc == self.passenger_loc) and (not self.passenger_picked_up):
                 self.passenger_picked_up = True
-                reward += 0
+                reward += 20
             else:
                 reward -= 10
         elif action == 5:
