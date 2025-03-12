@@ -14,11 +14,12 @@ class RealTaxiEnv():
         self.passenger_loc = None
         self.destination = None
         self.passenger_picked_up = False
+        self.pre_action = None  
     def reset(self):
         self.grid_size = random.randint(5, 10)
         self.current_fuel = self.fuel_limit
         all_locations = set((i, j) for i in range(self.grid_size) for j in range(self.grid_size))
-        self.obstacles = set(random.sample(list(all_locations), random.randint(0, (self.grid_size // 2)**2)))
+        self.obstacles = set(random.sample(list(all_locations), random.randint(0, 0)))
         all_locations -= self.obstacles
         self.taxi_loc = random.choice(list(all_locations))
         self.stations = random.sample(list(all_locations), 4)
@@ -26,6 +27,7 @@ class RealTaxiEnv():
         self.stations = list(self.stations)
         self.passenger_loc, self.destination = random.sample(self.stations, 2)
         self.passenger_picked_up = False  
+        self.pre_action = None
         return self.get_state(), {}
     def get_state(self):
         taxi_row, taxi_col = self.taxi_loc
@@ -53,6 +55,17 @@ class RealTaxiEnv():
         reward = 0
         done = False
         truncated = False
+
+        if action == 0 and self.pre_action == 1:
+            reward -= 5
+        if action == 1 and self.pre_action == 0:
+            reward -= 5
+        if action == 2 and self.pre_action == 3:
+            reward -= 5
+        if action == 3 and self.pre_action == 2:
+            reward -= 5
+
+        self.pre_action = action
 
         if action in [0, 1, 2, 3]:  
             reward -= 0.5
