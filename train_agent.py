@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from simple_custom_taxi_env import SimpleTaxiEnv
 from real_custom_taxi_env import RealTaxiEnv
 
-def tabular_q_learning(episodes=20000, alpha=0.06, gamma=0.9999, epsilon_start=1.0, epsilon_end=0.1, decay_rate=0.9999):
+def tabular_q_learning(episodes=6000, alpha=0.1, gamma=0.99, epsilon_start=1.0, epsilon_end=0.1, decay_rate=0.9995):
     def get_state(obs, passenger_picked_up, pre_action):
         taxi_loc = (obs[0], obs[1])
         stations = [(obs[2], obs[3]), (obs[4], obs[5]), (obs[6], obs[7]), (obs[8], obs[9])]
@@ -15,17 +15,21 @@ def tabular_q_learning(episodes=20000, alpha=0.06, gamma=0.9999, epsilon_start=1
         passenger_look = obs[14]
         destination_look = obs[15]
 
-        stations_north = [(station[0] < taxi_loc[0]) for station in stations]
-        stations_south = [(station[0] > taxi_loc[0]) for station in stations]
-        stations_east = [(station[1] > taxi_loc[1]) for station in stations]
-        stations_west = [(station[1] < taxi_loc[1]) for station in stations]
-        stations_distance = [abs(station[0] - taxi_loc[0]) + abs(station[1] - taxi_loc[1]) for station in stations]
+        station_north = False
+        station_south = False
+        station_east = False
+        station_west = False
+        for station in stations:
+            if taxi_loc[0] < station[0] and taxi_loc[1] == station[1]:
+                station_north = True
+            if taxi_loc[0] > station[0] and taxi_loc[1] == station[1]:
+                station_south = True
+            if taxi_loc[1] > station[1] and taxi_loc[0] == station[0]:
+                station_east = True
+            if taxi_loc[1] < station[1] and taxi_loc[0] == station[0]:
+                station_west = True
 
-        return (obstacle_north, obstacle_south, obstacle_east, obstacle_west, passenger_look, destination_look, passenger_picked_up, pre_action
-                , stations_north[0], stations_south[0], stations_east[0], stations_west[0]
-                , stations_north[1], stations_south[1], stations_east[1], stations_west[1]
-                , stations_north[2], stations_south[2], stations_east[2], stations_west[2]
-                , stations_north[3], stations_south[3], stations_east[3], stations_west[3])
+        return (obstacle_north, obstacle_south, obstacle_east, obstacle_west, passenger_look, destination_look, passenger_picked_up, pre_action, taxi_loc in stations, station_north, station_south, station_east, station_west)
 
     env = RealTaxiEnv(fuel_limit=5000)
     q_table = {}
