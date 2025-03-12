@@ -56,6 +56,9 @@ class RealTaxiEnv():
         done = False
         truncated = False
 
+        if action != 4 and self.taxi_loc == self.passenger_loc and not self.passenger_picked_up:
+            reward -= 10
+
         if action == 0 and self.pre_action == 1:
             reward -= 5
         if action == 1 and self.pre_action == 0:
@@ -89,15 +92,15 @@ class RealTaxiEnv():
         elif action == 4:  
             if (self.taxi_loc == self.passenger_loc) and (not self.passenger_picked_up):
                 self.passenger_picked_up = True
-                reward += 100
+                reward += 200
             else:
-                reward -= 60
+                reward -= 10
         elif action == 5:
             if (self.taxi_loc == self.destination) and self.passenger_picked_up:
                 reward += 500
                 done = True
             else:
-                reward -= 60
+                reward -= 10
         
         if self.current_fuel <= 0:
             truncated = True
