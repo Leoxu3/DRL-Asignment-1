@@ -61,7 +61,6 @@ def get_action(obs):
 
     pre_action = action
 
-    return action
     # You can submit this random agent to evaluate the performance of a purely random strategy.
 
 
