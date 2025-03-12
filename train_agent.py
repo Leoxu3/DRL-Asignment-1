@@ -1,17 +1,24 @@
-# train_agent.py
-
 import numpy as np
 import pickle
-import random
-import gym
-import os
+import matplotlib.pyplot as plt
 from simple_custom_taxi_env import SimpleTaxiEnv
 from real_custom_taxi_env import RealTaxiEnv
 
-q_table = {}
+def tabular_q_learning(episodes=6000, alpha=0.1, gamma=0.9995, epsilon_start=1.0, epsilon_end=0.1, decay_rate=0.9995):
+    def get_state(obs, passenger_picked_up, pre_action):
+        taxi_loc = (obs[0], obs[1])
+        stations = [(obs[2], obs[3]), (obs[4], obs[5]), (obs[6], obs[7]), (obs[8], obs[9])]
+        obstacle_north = obs[10]
+        obstacle_south = obs[11]
+        obstacle_east = obs[12]
+        obstacle_west = obs[13]
+        passenger_look = obs[14]
+        destination_look = obs[15]
 
-def tabular_q_learning(episodes=50000, alpha=0.1, gamma=0.99, epsilon_start=1.0, epsilon_end=0.1, decay_rate=0.99995):
+        return (obstacle_north, obstacle_south, obstacle_east, obstacle_west, passenger_look, (taxi_loc in stations), destination_look, passenger_picked_up, pre_action)
+
     env = RealTaxiEnv(fuel_limit=5000)
+    q_table = {}
     rewards_per_episode = []
     epsilon = epsilon_start
 
@@ -19,46 +26,60 @@ def tabular_q_learning(episodes=50000, alpha=0.1, gamma=0.99, epsilon_start=1.0,
         obs, _ = env.reset()
         done = False
         truncated = False
-        passenger_picked_up = False
         total_reward = 0
-        stations = [(obs[2], obs[3]), (obs[4], obs[5]), (obs[6], obs[7]), (obs[8], obs[9])]
-        taxi_loc = (obs[0], obs[1])
-        state = ((taxi_loc in stations), obs[10], obs[11], obs[12], obs[13], obs[14], obs[15], passenger_picked_up)
+        passenger_picked_up = False
+        pre_action = None
+        state = get_state(obs, passenger_picked_up, pre_action)
 
-        while not done and not truncated:
+        while not (done or truncated):
             if state not in q_table:
                 q_table[state] = np.zeros(6)
 
-            if random.random() < epsilon:
-                action = random.randint(0, 5)
+            if np.random.rand() < epsilon:
+                action = np.random.randint(6)
             else:
                 action = np.argmax(q_table[state])
 
-            next_obs, reward, done, truncated, info = env.step(action)
-            next_taxi_loc = (next_obs[0], next_obs[1])
-            if action == 4 and reward > -10:
+            if action == 4 and state[4] == 1 and state[5]:
                 passenger_picked_up = True
-            if action == 5:
+            if action == 5 and state[6] == 1 and state[5]:
                 passenger_picked_up = False
-            next_state = ((next_taxi_loc in stations), next_obs[10], next_obs[11], next_obs[12], next_obs[13], next_obs[14], next_obs[15], passenger_picked_up)
+
+            pre_action = action
+
+            obs, reward, done, truncated, _ = env.step(action)
+            next_state = get_state(obs, passenger_picked_up, pre_action)
+
             if next_state not in q_table:
                 q_table[next_state] = np.zeros(6)
 
-            q_table[state][action] += alpha * (reward + gamma * np.max(q_table[next_state]) - q_table[state][action])
+            if not done:
+                best_next_q = np.max(q_table[next_state])
+                q_table[state][action] += alpha * (reward + gamma * best_next_q - q_table[state][action])
+            else:
+                q_table[state][action] += alpha * (reward - q_table[state][action])
 
             state = next_state
             total_reward += reward
 
         rewards_per_episode.append(total_reward)
-        epsilon = max(epsilon * decay_rate, epsilon_end)
+
+        epsilon = max(epsilon_end, epsilon * decay_rate)
 
         if (episode + 1) % 100 == 0:
             avg_reward = np.mean(rewards_per_episode[-100:])
             print(f"Episode {episode + 1}/{episodes}, Avg Reward: {avg_reward:.4f}, Epsilon: {epsilon:.3f}")
+    
+    return q_table, rewards_per_episode
 
 print("Training agent...")
-tabular_q_learning()
+q_table, rewards_per_episode = tabular_q_learning()
 print("Training completed.")
 with open("q_table.pkl", "wb") as f:
     pickle.dump(q_table, f)
-print("Training completed and Q-table saved.")
+plt.plot(rewards_per_episode)
+plt.xlabel("Episodes")
+plt.ylabel("Total Reward")
+plt.title("Q Learning Training Progress")
+plt.show()
+print("Training completed and q-table saved.")
