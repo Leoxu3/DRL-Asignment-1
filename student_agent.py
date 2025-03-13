@@ -4,18 +4,20 @@ import random
 import pickle
 
 def get_action(obs):
-    obstacle_north = obs[10]
-    obstacle_south = obs[11]
-    obstacle_east = obs[12]
-    obstacle_west = obs[13]
-    if obstacle_north == 0:
-        action = 1
-    elif obstacle_south == 0:
-        action = 0
-    elif obstacle_east == 0:
-        action = 2
-    elif obstacle_west == 0:
-        action = 3
+    def get_state(obs):
+        obstacle_north = obs[10]
+        obstacle_south = obs[11]
+        obstacle_east = obs[12]
+        obstacle_west = obs[13]
+
+        return (obstacle_north, obstacle_south, obstacle_east, obstacle_west)
+    
+    state = get_state(obs)
+    if state not in q_table:
+        action = np.random.randint(0, 3)
     else:
-        action = random.randint(4,5)
+        action = np.argmax(q_table[state])
     return action
+
+with open("q_table.pkl", "rb") as f:
+    q_table = pickle.load(f)
