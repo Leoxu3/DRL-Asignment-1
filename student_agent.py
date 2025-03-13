@@ -9,12 +9,13 @@ def get_action(obs):
     obstacle_east = obs[12]
     obstacle_west = obs[13]
     if obstacle_north != 1:
-        return 1
-    if obstacle_east != 1:
-        return 2
-    if obstacle_south != 1:
-        return 0
-    if obstacle_west != 1:
-        return 3
+        action = 1
+    elif obstacle_east != 1:
+        action = 2
+    elif obstacle_south != 1:
+        action = 3
+    elif obstacle_west != 1:
+        action = 0
     else:
-        return random.randint(4,5)
+        action = random.randint(4,5)
+    return action
