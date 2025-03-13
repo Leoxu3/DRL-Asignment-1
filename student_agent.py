@@ -45,6 +45,7 @@ def get_action(obs):
         exp_x = np.exp(x - np.max(x))
         return exp_x / exp_x.sum()
     
+    '''
     state = get_state(obs, passenger_picked_up, pre_action)
     if state not in q_table:
         action = random.randint(0, 5)
@@ -61,7 +62,20 @@ def get_action(obs):
 
     pre_action = action
 
-    return action
+    return action'
+    '''
+    obstacle_north = obs[10]
+    obstacle_south = obs[11]
+    obstacle_east = obs[12]
+    obstacle_west = obs[13]
+    if obstacle_north == 0:
+        return 1
+    if obstacle_south == 0:
+        return 0
+    if obstacle_east == 0:
+        return 2
+    if obstacle_west == 0:
+        return 3
     # You can submit this random agent to evaluate the performance of a purely random strategy.
 
 

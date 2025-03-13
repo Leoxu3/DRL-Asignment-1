@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from simple_custom_taxi_env import SimpleTaxiEnv
 from real_custom_taxi_env import RealTaxiEnv
 
-def tabular_q_learning(episodes=100000, alpha=0.1, gamma=0.99, epsilon_start=1.0, epsilon_end=0.1, decay_rate=0.99995):
+def tabular_q_learning(episodes=5000, alpha=0.1, gamma=0.99, epsilon_start=1.0, epsilon_end=0.1, decay_rate=0.999):
     def get_state(obs, passenger_picked_up, pre_action):
         taxi_loc = (obs[0], obs[1])
         stations = [(obs[2], obs[3]), (obs[4], obs[5]), (obs[6], obs[7]), (obs[8], obs[9])]
@@ -32,7 +32,7 @@ def tabular_q_learning(episodes=100000, alpha=0.1, gamma=0.99, epsilon_start=1.0
             if taxi_loc == station:
                 station_middle = True
 
-        return (obstacle_north, obstacle_south, obstacle_east, obstacle_west, passenger_look, destination_look, passenger_picked_up, station_north, station_south, station_east, station_west, station_middle, pre_action)
+        return (obstacle_north, obstacle_south, obstacle_east, obstacle_west)
 
     def softmax(x):
         exp_x = np.exp(x - np.max(x))
@@ -59,14 +59,13 @@ def tabular_q_learning(episodes=100000, alpha=0.1, gamma=0.99, epsilon_start=1.0
             if np.random.rand() < epsilon:
                 action = np.random.randint(6)
             else:
-                probs = softmax(q_table[state])
-                action = np.random.choice(range(6), p=probs)
-
+                action = np.argmax(q_table[state])
+            '''
             if action == 4 and state[4] == 1 and state[5]:
                 passenger_picked_up = True
             if action == 5 and state[6] == 1 and state[5]:
                 passenger_picked_up = False
-
+            '''
             pre_action = action
 
             obs, reward, done, truncated, _ = env.step(action)
