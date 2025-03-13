@@ -5,40 +5,15 @@ from simple_custom_taxi_env import SimpleTaxiEnv
 from real_custom_taxi_env import RealTaxiEnv
 
 def tabular_q_learning(episodes=5000, alpha=0.1, gamma=0.99, epsilon_start=1.0, epsilon_end=0.1, decay_rate=0.999):
-    def get_state(obs, passenger_picked_up, pre_action):
-        taxi_loc = (obs[0], obs[1])
-        stations = [(obs[2], obs[3]), (obs[4], obs[5]), (obs[6], obs[7]), (obs[8], obs[9])]
+    def get_state(obs):
         obstacle_north = obs[10]
         obstacle_south = obs[11]
         obstacle_east = obs[12]
         obstacle_west = obs[13]
-        passenger_look = obs[14]
-        destination_look = obs[15]
-
-        station_north =False
-        station_south = False
-        station_east = False
-        station_west = False
-        station_middle = False
-        for station in stations:
-            if (taxi_loc[0] - 1, taxi_loc[1]) == station:
-                station_north = True
-            if (taxi_loc[0] + 1, taxi_loc[1]) == station:
-                station_south = True
-            if (taxi_loc[0], taxi_loc[1] + 1) == station:
-                station_east = True
-            if (taxi_loc[0], taxi_loc[1] - 1) == station:
-                station_west = True
-            if taxi_loc == station:
-                station_middle = True
 
         return (obstacle_north, obstacle_south, obstacle_east, obstacle_west)
-
-    def softmax(x):
-        exp_x = np.exp(x - np.max(x))
-        return exp_x / exp_x.sum()
     
-    env = RealTaxiEnv(fuel_limit=5000)
+    env = SimpleTaxiEnv(fuel_limit=5000)
     q_table = {}
     rewards_per_episode = []
     epsilon = epsilon_start
@@ -48,9 +23,7 @@ def tabular_q_learning(episodes=5000, alpha=0.1, gamma=0.99, epsilon_start=1.0, 
         done = False
         truncated = False
         total_reward = 0
-        passenger_picked_up = False
-        pre_action = None
-        state = get_state(obs, passenger_picked_up, pre_action)
+        state = get_state(obs)
 
         while not (done or truncated):
             if state not in q_table:
@@ -60,16 +33,9 @@ def tabular_q_learning(episodes=5000, alpha=0.1, gamma=0.99, epsilon_start=1.0, 
                 action = np.random.randint(6)
             else:
                 action = np.argmax(q_table[state])
-            '''
-            if action == 4 and state[4] == 1 and state[5]:
-                passenger_picked_up = True
-            if action == 5 and state[6] == 1 and state[5]:
-                passenger_picked_up = False
-            '''
-            pre_action = action
 
-            obs, reward, done, truncated, _ = env.step(action)
-            next_state = get_state(obs, passenger_picked_up, pre_action)
+            obs, reward, done, _ = env.step(action)
+            next_state = get_state(obs)
 
             if next_state not in q_table:
                 q_table[next_state] = np.zeros(6)

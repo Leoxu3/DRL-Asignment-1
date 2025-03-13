@@ -22,7 +22,6 @@ class RealTaxiEnv():
         all_locations -= self.obstacles
         self.taxi_loc = random.choice(list(all_locations))
         self.stations = random.sample(list(all_locations), 4)
-        #self.stations = [(0,0), (0, self.grid_size-1), (self.grid_size-1, 0), (self.grid_size-1, self.grid_size-1)]
         self.stations = list(self.stations)
         self.passenger_loc, self.destination = random.sample(self.stations, 2)
         self.passenger_picked_up = False  
@@ -49,17 +48,13 @@ class RealTaxiEnv():
         state = (taxi_row, taxi_col, self.stations[0][0], self.stations[0][1],self.stations[1][0], self.stations[1][1], self.stations[2][0], self.stations[2][1], self.stations[3][0], self.stations[3][1], obstacle_north, obstacle_south, obstacle_east, obstacle_west, passenger_look, destination_look)
         return state
     def step(self, action):
-        """Perform an action and update the environment state."""
         self.current_fuel -= 1
         reward = 0
         done = False
         truncated = False
 
-        if action != 4 and (not self.passenger_picked_up) and self.taxi_loc == self.passenger_loc:
-            reward -= 0
-
         if action in [0, 1, 2, 3]:  
-            reward += 0.01
+            reward -= 0.1
 
             next_row, next_col = self.taxi_loc
             if action == 0 :  # Move South
@@ -77,26 +72,21 @@ class RealTaxiEnv():
                 self.taxi_loc = (next_row, next_col)
                 if self.passenger_picked_up:
                     self.passenger_loc = (next_row, next_col)
-        else:
-            reward -= 10
-        '''
         elif action == 4:  
             if (self.taxi_loc == self.passenger_loc) and (not self.passenger_picked_up):
                 self.passenger_picked_up = True
-                reward += 1000
             else:
                 reward -= 10
         elif action == 5:
             if (self.taxi_loc == self.destination) and self.passenger_picked_up:
-                reward += 1000
+                reward += 50
                 done = True
             else:
                 reward -= 10
-        '''
         
         if self.current_fuel <= 0:
             truncated = True
-            reward += 10
+            reward -= 10
 
         return self.get_state(), reward, done, truncated, {}
     
