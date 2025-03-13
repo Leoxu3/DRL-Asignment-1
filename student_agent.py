@@ -13,9 +13,9 @@ def get_action(obs):
     elif obstacle_east != 1:
         action = 2
     elif obstacle_south != 1:
-        action = 3
-    elif obstacle_west != 1:
         action = 0
+    elif obstacle_west != 1:
+        action = 3
     else:
         action = random.randint(4,5)
     return action
