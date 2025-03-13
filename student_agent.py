@@ -19,5 +19,5 @@ def get_action(obs):
     else:
         action = random.randint(4,5)
     # 句尾空格
-    print(action, end=' ')
+    print(f'Action: {action} ', f'Obstacle North: {obstacle_north} ', f'Obstacle South: {obstacle_south} ', f'Obstacle East: {obstacle_east} ', f'Obstacle West: {obstacle_west} ')
     return action
