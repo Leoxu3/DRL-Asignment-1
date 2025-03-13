@@ -76,6 +76,8 @@ def get_action(obs):
         return 2
     if obstacle_west == 0:
         return 3
+    else:
+        return None
     # You can submit this random agent to evaluate the performance of a purely random strategy.
 
 
