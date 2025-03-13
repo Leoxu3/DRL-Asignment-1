@@ -3,6 +3,8 @@ import gym
 import numpy as np
 import time
 import random
+import sys
+sys.path.append("/mnt/c/Users/ck108/OneDrive/Documents/NTU 3-2/深度強化學習/DRL-Asignment-1")
 
 
 from xml.etree import ElementTree as ET
