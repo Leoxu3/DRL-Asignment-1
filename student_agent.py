@@ -18,4 +18,4 @@ def get_action(obs):
         action = 3
     else:
         action = random.randint(4,5)
-    return action
+    return None
