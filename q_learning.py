@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from simple_custom_taxi_env import SimpleTaxiEnv
 from real_custom_taxi_env import RealTaxiEnv
 
-def tabular_q_learning(episodes=5000, alpha=0.1, gamma=0.99, epsilon_start=1.0, epsilon_end=0.1, decay_rate=0.999):
+def tabular_q_learning(episodes=25000, alpha=0.1, gamma=0.99, epsilon_start=1.0, epsilon_end=0.1, decay_rate=0.9999):
     def get_state(obs):
         obstacle_north = obs[10]
         obstacle_south = obs[11]
@@ -13,7 +13,7 @@ def tabular_q_learning(episodes=5000, alpha=0.1, gamma=0.99, epsilon_start=1.0, 
 
         return (obstacle_north, obstacle_south, obstacle_east, obstacle_west)
     
-    env = SimpleTaxiEnv(fuel_limit=5000)
+    env = RealTaxiEnv(fuel_limit=5000)
     q_table = {}
     rewards_per_episode = []
     epsilon = epsilon_start
@@ -34,7 +34,7 @@ def tabular_q_learning(episodes=5000, alpha=0.1, gamma=0.99, epsilon_start=1.0, 
             else:
                 action = np.argmax(q_table[state])
 
-            obs, reward, done, _ = env.step(action)
+            obs, reward, done, truncated, _ = env.step(action)
             next_state = get_state(obs)
 
             if next_state not in q_table:
