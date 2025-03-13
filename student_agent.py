@@ -18,4 +18,6 @@ def get_action(obs):
         action = 3
     else:
         action = random.randint(4,5)
-    return None
+    # 句尾空格
+    print(action, end=' ')
+    return action
