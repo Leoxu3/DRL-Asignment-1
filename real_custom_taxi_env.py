@@ -54,7 +54,7 @@ class RealTaxiEnv():
         truncated = False
 
         if action in [0, 1, 2, 3]:  
-            reward += 0.01
+            reward -= 0.1
 
             next_row, next_col = self.taxi_loc
             if action == 0 :  # Move South
@@ -67,14 +67,11 @@ class RealTaxiEnv():
                 next_col -= 1
 
             if (not (0 <= next_row < self.grid_size and 0 <= next_col < self.grid_size)) or ((next_row, next_col) in self.obstacles):
-                reward -= 10
+                reward -= 5
             else:
                 self.taxi_loc = (next_row, next_col)
                 if self.passenger_picked_up:
                     self.passenger_loc = (next_row, next_col)
-        else:
-            reward -= 100
-        '''
         elif action == 4:  
             if (self.taxi_loc == self.passenger_loc) and (not self.passenger_picked_up):
                 self.passenger_picked_up = True
@@ -85,12 +82,11 @@ class RealTaxiEnv():
                 reward += 50
                 done = True
             else:
-                reward -= 10'
-        '''
+                reward -= 10
         
         if self.current_fuel <= 0:
             truncated = True
-            reward -= 0
+            reward -= 10
 
         return self.get_state(), reward, done, truncated, {}
     
