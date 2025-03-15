@@ -38,7 +38,7 @@ def tabular_q_learning(episodes=25000, alpha=0.1, gamma=0.99, epsilon_start=1.0,
         exp_x = np.exp(x - np.max(x))
         return exp_x / exp_x.sum()
     
-    env = SimpleTaxiEnv(fuel_limit=5000)
+    env = RealTaxiEnv(fuel_limit=5000)
     q_table = {}
     rewards_per_episode = []
     epsilon = epsilon_start
@@ -69,7 +69,7 @@ def tabular_q_learning(episodes=25000, alpha=0.1, gamma=0.99, epsilon_start=1.0,
 
             pre_action = action
 
-            obs, reward, done, _ = env.step(action)
+            obs, reward, done, truncated, _ = env.step(action)
             next_state = get_state(obs, passenger_picked_up, pre_action)
 
             if next_state not in q_table:
